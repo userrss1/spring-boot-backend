@@ -30,7 +30,6 @@ public class SecurityConfig {
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
-
         http
                 .csrf(csrf -> csrf.disable())
                 .cors(cors -> cors.configurationSource(corsConfig()))
@@ -38,12 +37,12 @@ public class SecurityConfig {
                         session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/api/auth/**").permitAll()
-                        .requestMatchers("/api/categories").permitAll()  // GET only
+                        .requestMatchers("/api/categories").permitAll()
                         .requestMatchers("/api/products/**").permitAll()
                         .requestMatchers("/api/stats").permitAll()
-                        .anyRequest().authenticated()  // 🔥 CHANGE THIS - require auth by default
+                        .anyRequest().authenticated()
                 )
-                .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class); // 🔥 ADD JWT FILTER
+                .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
     }
@@ -52,9 +51,21 @@ public class SecurityConfig {
     public CorsConfigurationSource corsConfig() {
         CorsConfiguration config = new CorsConfiguration();
         config.setAllowCredentials(true);
-        config.addAllowedOriginPattern("*");
+
+        // Allow S3 website and localhost
+        config.addAllowedOrigin("http://sudiptbucket.s3-website.eu-north-1.amazonaws.com");
+        config.addAllowedOrigin("http://localhost:5173");
+        config.addAllowedOrigin("http://localhost:3000");
+
+        // Allow all headers
         config.addAllowedHeader("*");
-        config.addAllowedMethod("*");
+
+        // Allow specific methods
+        config.addAllowedMethod("GET");
+        config.addAllowedMethod("POST");
+        config.addAllowedMethod("PUT");
+        config.addAllowedMethod("DELETE");
+        config.addAllowedMethod("OPTIONS");
 
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", config);
