@@ -52,20 +52,12 @@ public class SecurityConfig {
         CorsConfiguration config = new CorsConfiguration();
         config.setAllowCredentials(true);
 
-        // Allow S3 website and localhost
-        config.addAllowedOrigin("http://sudiptbucket.s3-website.eu-north-1.amazonaws.com");
-        config.addAllowedOrigin("http://localhost:5173");
-        config.addAllowedOrigin("http://localhost:3000");
+        // Allow all origin patterns (temporary for testing)
+        config.addAllowedOriginPattern("*");
 
-        // Allow all headers
+        // Allow all headers and methods
         config.addAllowedHeader("*");
-
-        // Allow specific methods
-        config.addAllowedMethod("GET");
-        config.addAllowedMethod("POST");
-        config.addAllowedMethod("PUT");
-        config.addAllowedMethod("DELETE");
-        config.addAllowedMethod("OPTIONS");
+        config.addAllowedMethod("*");
 
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", config);
